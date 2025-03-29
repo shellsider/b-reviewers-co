@@ -1,0 +1,5 @@
+to run venv
+source venv/Scripts/activate
+
+running server
+uvicorn app.main:app --reload

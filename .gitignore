@@ -1,0 +1,42 @@
+# Ignore virtual environment directories
+venv/
+.env/
+.env 
+
+# Ignore Firebase Admin SDK credentials (ensure the path matches the one you use)
+firebase-admin-sdk.json
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore editor config files (e.g., VSCode, PyCharm, etc.)
+.vscode/
+.idea/
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Windows system files
+Thumbs.db
+desktop.ini
+
+# Ignore log files
+*.log
+
+# Ignore Python build directories
+build/
+dist/
+*.egg-info/
+
+# Ignore test/coverage directories
+.coverage
+.tox/
+.nox/
+*.coveragerc
+*.hypothesis/
+
+# Ignore package manager lock files for Python
+Pipfile.lock
