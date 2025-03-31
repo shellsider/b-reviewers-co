@@ -1,0 +1,12 @@
+{
+  "name": "b-reviewers-co",
+  "version": "1.0.0",
+  "description": "Backend for Reviewers Co",
+  "private": true,
+  "scripts": {
+    "deploy:functions": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "b-reviewers-co": "file:"
+  }
+}

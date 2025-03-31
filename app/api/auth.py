@@ -22,9 +22,21 @@ async def sign_in(sign_in_data: SignInRequest):
     return await auth_service.sign_in(sign_in_data)
 
 @router.post("/signout")
-async def sign_out(current_user: dict = Depends(get_current_user)):
-    return await auth_service.sign_out(current_user)
+async def sign_out(token: str = Depends(security)):
+    """
+    Sign out user and revoke their tokens.
+    Requires valid bearer token.
+    """
+    return await auth_service.sign_out(token.credentials)
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_profile(current_user: dict = Depends(get_current_user)):
     return await auth_service.get_current_user_info(current_user)
+
+@router.delete("/delete")
+async def delete_user_account(current_user: dict = Depends(get_current_user)):
+    """
+    Delete user account from both Firebase Authentication and Firestore.
+    Requires authentication.
+    """
+    return await auth_service.delete_user(current_user)

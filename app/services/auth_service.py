@@ -5,7 +5,8 @@ from fastapi import HTTPException
 import requests
 from app.models.auth import SignInRequest, AuthResponse, UserResponse, SignUpRequest
 from app.utils.env_manager import FIREBASE_WEB_API_KEY
-from app.services.firestore_service import create_user_document, get_user_by_email, verify_password
+from app.services.firestore_service import create_user_document, get_user_by_email, verify_password, delete_user_document
+from app.services.token_blacklist import add_to_blacklist
 
 # Firebase Auth URLs
 FIREBASE_AUTH_SIGN_IN_URL = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={FIREBASE_WEB_API_KEY}"
@@ -94,9 +95,15 @@ async def sign_in(sign_in_data: SignInRequest) -> AuthResponse:
 
 async def sign_out(id_token: str) -> dict:
     try:
-        # Verify and revoke the token
+        # Verify the token and get user info
         decoded_token = auth.verify_id_token(id_token)
-        auth.revoke_refresh_tokens(decoded_token["uid"])
+        
+        # Add token to blacklist
+        add_to_blacklist(id_token, decoded_token['uid'])
+        
+        # Revoke refresh tokens for the user
+        auth.revoke_refresh_tokens(decoded_token['uid'])
+        
         return {"message": "Successfully signed out"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -118,5 +125,23 @@ async def get_current_user_info(user_token: dict) -> UserResponse:
             age=user_doc['age'],
             account_status=user_doc['account_status']
         )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+async def delete_user(user_token: dict) -> dict:
+    try:
+        # Get user from Firebase Auth
+        firebase_user = auth.get_user(user_token["uid"])
+        
+        # Delete from Firestore first
+        firestore_result = delete_user_document(firebase_user.email)
+        
+        # Then delete from Firebase Auth
+        auth.delete_user(firebase_user.uid)
+        
+        return {
+            "message": "User successfully deleted from both Firebase Auth and Firestore",
+            "firestore_result": firestore_result["message"]
+        }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

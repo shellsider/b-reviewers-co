@@ -61,4 +61,23 @@ def update_user_status(email: str, status: str) -> dict:
         })
         return {'message': f'User status updated to {status}'}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating user status: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"Error updating user status: {str(e)}")
+
+def delete_user_document(email: str) -> dict:
+    try:
+        # Get the document reference
+        doc_ref = users_collection.document(email)
+        
+        # Check if document exists
+        doc = doc_ref.get()
+        if not doc.exists:
+            raise HTTPException(status_code=404, detail="User not found in Firestore")
+        
+        # Delete the document
+        doc_ref.delete()
+        
+        return {'message': f'User document for {email} successfully deleted from Firestore'}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting user document: {str(e)}") 
