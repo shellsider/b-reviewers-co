@@ -17,3 +17,4 @@ def get_env_variable(key: str, default=None):
 
 # Firebase Credentials (Accessing via environment variables)
 FIREBASE_ADMIN_SDK_PATH = get_env_variable("FIREBASE_ADMIN_SDK_PATH")
+FIREBASE_WEB_API_KEY = get_env_variable("FIREBASE_WEB_API_KEY")

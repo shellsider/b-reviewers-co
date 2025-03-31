@@ -1,13 +1,13 @@
 # app/main.py
 
 from fastapi import FastAPI
-from app.api import auth, users
+from app.api import auth
+from app.firebase import db  # This will ensure Firebase is initialized at startup
 
 app = FastAPI()
 
-# Include the routers
+# Include the auth router
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(users.router, prefix="/users", tags=["users"])
 
 @app.get("/")
 def read_root():
